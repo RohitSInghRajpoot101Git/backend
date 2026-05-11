@@ -31,54 +31,58 @@ this is not the final structure and can or will be changed
 
 ```
 evenup-api/
-├── app/
-│   ├── main.py                     # FastAPI app init, router registration
-│   ├── config.py                   # Settings via pydantic-settings
-│   ├── database.py                 # Async SQLAlchemy engine + session
-│   │
-│   ├── routers/
-│   │   ├── auth.py
-│   │   ├── users.py
-│   │   ├── personal_expenses.py
-│   │   ├── groups.py
-│   │   ├── group_members.py
-│   │   ├── group_expenses.py
-│   │   └── balances.py
-│   │
-│   ├── services/
-│   │   ├── auth_service.py
-│   │   ├── personal_expense_service.py
-│   │   ├── group_service.py
-│   │   ├── expense_service.py
-│   │   ├── balance_service.py
-│   │   ├── settlement_service.py
-│   │   ├── sync_service.py
-│   │   └── debt_breakdown_service.py
-│   │
-│   ├── repositories/
-│   │   ├── user_repository.py
-│   │   ├── personal_expense_repository.py
-│   │   ├── group_repository.py
-│   │   ├── group_member_repository.py
-│   │   ├── expense_repository.py
-│   │   ├── split_repository.py
-│   │   └── settlement_repository.py
-│   │
-│   ├── models/                     # SQLAlchemy ORM models
-│   ├── schemas/                    # Pydantic request/response schemas
-│   ├── engines/                    # Core computation engines
-│   │   ├── split_engine.py
-│   │   ├── balance_engine.py
-│   │   ├── debt_breakdown_engine.py
-│   │   ├── settlement_engine.py
-│   │   └── sync_engine.py
-│   └── deps.py                     # Shared FastAPI dependencies (get_db, get_current_user)
-│
-├── alembic/                        # DB migrations
-├── tests/
-├── docker-compose.yml
+├── main.py                     # FastAPI app init, router registration
+├── config.py                   # Settings via pydantic-settings
+├── database.py                 # Async SQLAlchemy engine + session
+├── deps.py                     # Shared FastAPI dependencies (get_db, get_current_user)
+├── alembic.ini                 # Alembic configuration
+├── start.sh                    # Dev server startup script
 ├── Dockerfile
-└── requirements.txt
+├── docker-compose.yml
+├── requirements.txt
+├── README.md
+│
+├── routers/                    # Route handlers
+│   ├── auth.py
+│   ├── users.py
+│   ├── personal_expenses.py
+│   ├── groups.py
+│   ├── group_members.py
+│   ├── group_expenses.py
+│   └── balances.py
+│
+├── services/                   # Business logic
+│   ├── auth_service.py
+│   ├── personal_expense_service.py
+│   ├── group_service.py
+│   ├── expense_service.py
+│   ├── balance_service.py
+│   ├── settlement_service.py
+│   ├── sync_service.py
+│   └── debt_breakdown_service.py
+│
+├── repositories/               # Database access layer
+│   ├── user_repository.py
+│   ├── personal_expense_repository.py
+│   ├── group_repository.py
+│   ├── group_member_repository.py
+│   ├── expense_repository.py
+│   ├── split_repository.py
+│   └── settlement_repository.py
+│
+├── models/                     # SQLAlchemy ORM models
+├── schemas/                    # Pydantic request/response schemas
+│
+├── engines/                    # Core computation engines
+│   ├── split_engine.py
+│   ├── balance_engine.py
+│   ├── debt_breakdown_engine.py
+│   ├── settlement_engine.py
+│   └── sync_engine.py
+│
+├── alembic/                    # DB migrations
+└── tests/
+    └── test_db.py              # DB connection test
 ```
 
 ---
