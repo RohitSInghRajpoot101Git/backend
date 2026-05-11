@@ -12,7 +12,7 @@ from schemas.user import UserCreate , UserLogin
 
 from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 def password_hashing(password: str) -> str:
     return pwd_context.hash(password)

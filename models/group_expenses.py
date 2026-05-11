@@ -1,9 +1,15 @@
 import uuid
-from sqlalchemy import Column, String, Numeric, DateTime, ForeignKey
+from sqlalchemy import Column, String, Numeric, DateTime, ForeignKey, Enum as SQLEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from database import Base
+from enum import Enum
+
+class SplitType(Enum):
+    EQUAL = "equal"
+    EXACT = "exact"
+    PERCENTAGE = "percentage"
 
 class GroupExpense(Base):
     __tablename__ = "group_expenses"
@@ -13,7 +19,7 @@ class GroupExpense(Base):
     title = Column(String, nullable=False)
     amount = Column(Numeric(10, 2), nullable=False)
     paid_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    split_type = Column(String, nullable=False, default="equal")  # "equal" / "exact" / "percentage"
+    split_type = Column(SQLEnum(SplitType), nullable=False, default=SplitType.EQUAL) # "equal" / "exact" / "percentage"
     created_at = Column(DateTime, server_default=func.now())
     
     # relationships
