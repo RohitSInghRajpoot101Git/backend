@@ -1,6 +1,6 @@
-from sqlalchemy import Column, String, TIMESTAMP , Boolean , Enum as SQLEnum 
-from sqlalchemy.dialects.postgresql import UUID 
-from sqlalchemy.sql import func
+from sqlalchemy import Column, String, TIMESTAMP , Boolean , Enum as SQLEnum  #type: ignore
+from sqlalchemy.dialects.postgresql import UUID #type: ignore
+from sqlalchemy.sql import func #type: ignore
 
 from database import Base
 from enum import Enum
