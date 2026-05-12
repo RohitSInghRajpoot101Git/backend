@@ -16,3 +16,8 @@ def PingPong(payload: Data):
         return {"ping": "pong"}
     else:
         return {"message": f"should have sent ping instead of '{payload.data}' you dumb ass"}
+    
+    
+@app.get("/health")
+def health():
+    return {"status": "ok"}

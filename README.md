@@ -6,7 +6,7 @@ also backend is up on
 
 
 added an uptime bot and the results are on this 
-[Link](https://stats.uptimerobot.com/Fp6SnnG3zG)
+[Link]
 
 # Evenup — Backend API
 
