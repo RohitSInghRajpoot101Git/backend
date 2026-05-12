@@ -1,6 +1,6 @@
-import pytest
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import create_async_engine
+import pytest #type: ignore
+from sqlalchemy import text #type: ignore
+from sqlalchemy.ext.asyncio import create_async_engine #type: ignore
 
 from config import DATABASE_URL
 

@@ -1,4 +1,4 @@
-import pytest
+import pytest #type: ignore
 from datetime import timedelta
 from services.auth_service import (
     password_hashing,
