@@ -96,3 +96,13 @@ def test_13_access_and_refresh_tokens_differ():
     access = create_access_token(payload)
     refresh = create_refresh_token(payload)
     assert access != refresh
+
+def test_14_access_token_fails_refresh_validation():
+    access_token = create_access_token({"sub": "user-123"})
+
+    payload = decode_token(
+        access_token,
+        expected_type="refresh",
+    )
+
+    assert payload is None

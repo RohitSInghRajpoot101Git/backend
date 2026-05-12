@@ -34,7 +34,10 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
         expire = datetime.now(timezone.utc) + timedelta(
             minutes=ACCESS_TOKEN_EXPIRE_MINUTES
         )
-    to_encode.update({"exp": expire})
+    to_encode.update({
+            "exp": expire,
+            "type": "access",
+        })
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
@@ -45,15 +48,27 @@ def create_refresh_token(data: dict, expires_delta: timedelta | None = None) -> 
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    to_encode.update({"exp": expire})
+    to_encode.update({
+            "exp": expire,
+            "type": "refresh",
+        })
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
-def decode_token(token: str) -> dict | None:
+def decode_token(
+        token: str,
+        expected_type: str | None = None,
+    ) -> dict | None:
+    
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+        if expected_type and payload.get("type") != expected_type:
+            return None
+
         return payload
+
     except JWTError:
         return None
 

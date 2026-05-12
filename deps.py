@@ -23,7 +23,7 @@ async def get_current_user(
 ):
     token = credentials.credentials
 
-    payload = decode_token(token)
+    payload = decode_token(token, expected_type="access")
 
     if not payload:
         raise HTTPException(
