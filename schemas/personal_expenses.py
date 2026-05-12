@@ -23,7 +23,7 @@ class personalExpenseResponse(BaseModel):
     group_id : UUID | None = None
     group_expense_id: UUID | None = None
     title : str 
-    amount : Decimal
+    amount : Decimal 
     category : str | None = None 
     date : datetime | None = None 
     notes : str | None = None 
