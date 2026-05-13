@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models.expense_splits import ExpenseSplit
 from models.group_expenses import GroupExpense
 
+
 class ExpenseRepository:
       def __init__(self, session: AsyncSession):
             self.session = session

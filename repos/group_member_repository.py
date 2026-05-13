@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.group_members import GroupMember
 
+
 class GroupMemberRepository:
       def __init__(self, session: AsyncSession):
             self.session = session
