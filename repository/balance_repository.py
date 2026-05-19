@@ -27,7 +27,7 @@ class BalanceRepository:
             )
         )
 
-        return list(result.scalars().all())
+        return result.scalars().all()
 
     async def get_user_splits(
         self, user_id: UUID, group_id: UUID
@@ -43,7 +43,7 @@ class BalanceRepository:
             )
         )
 
-        return list(result.scalars().all())
+        return result.scalars().all()
 
     async def get_payments_made(
         self, user_id: UUID, group_id: UUID
@@ -56,7 +56,7 @@ class BalanceRepository:
             )
         )
 
-        return list(result.scalars().all())
+        return result.scalars().all()
 
     async def get_payments_received(
         self, user_id: UUID, group_id: UUID
@@ -69,12 +69,12 @@ class BalanceRepository:
             )
         )
 
-        return list(result.scalars().all())
+        return result.scalars().all()
 
     async def get_personal_expenses(self, user_id: UUID) -> list[PersonalExpense]:
 
         result = await self.session.execute(
-            select[PersonalExpense].where(PersonalExpense.user_id == user_id)
+            select(PersonalExpense).where(PersonalExpense.user_id == user_id)
         )
 
-        return list(result.scalars().all())
+        return result.scalars().all()
