@@ -12,7 +12,7 @@ from core.config import (
     SECRET_KEY,
 )
 from models.user import AuthProvider, User
-from repos.user_repository import UserRepository
+from repository.user_repository import UserRepository
 from schemas.auth import LoginResponse, RegisterResponse
 from schemas.user import TokenResponse, UserCreate, UserLogin
 from utils.user_utils import generate_user_code
