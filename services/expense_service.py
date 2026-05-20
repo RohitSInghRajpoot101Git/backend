@@ -26,12 +26,12 @@ async def create_expenses(
     group_repo = GroupRepository(db)
     member_repo = GroupMemberRepository(db)
 
+    if not await member_repo.is_member(paid_by, group_id):
+        raise HTTPException(status_code=403, detail="Member is not authorised")
+
     group = await group_repo.get_by_id(group_id)
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
-
-    if not await member_repo.is_member(paid_by, group_id):
-        raise HTTPException(status_code=403, detail="Member is not authorised")
 
     members = await member_repo.list_group_members(group_id)
     members_ids: list[UUID] = [m.user_id for m in members]
