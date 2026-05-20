@@ -74,3 +74,6 @@ class BalanceService:
 
         totals["__total__"] = grand_total
         return totals
+
+
+# Basic Business logic
