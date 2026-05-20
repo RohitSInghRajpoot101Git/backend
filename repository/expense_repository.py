@@ -50,7 +50,6 @@ class ExpenseRepository:
 
     async def delete_expense(self, expense: GroupExpense) -> None:
         await self.session.delete(expense)
-        
 
     async def get_splits(self, expense_id: UUID) -> list[ExpenseSplit]:
         result = await self.session.execute(

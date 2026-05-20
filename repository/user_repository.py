@@ -38,7 +38,6 @@ class UserRepository:
 
     async def delete_user(self, user: User) -> None:
         await self.session.delete(user)
-        
 
     async def get_user_by_user_code(self, user_code: str) -> User | None:
         result = await self.session.execute(
