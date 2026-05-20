@@ -128,10 +128,4 @@ def simplify_debt(aggregated_debt: dict) -> dict:
             if amount > reverse_amount:
                 simplified_debt[debtor][creditor] = abs(amount - reverse_amount)
 
-    return {
-        debtor: dict(creditors) 
-        for debtor, creditors in simplified_debt.items()
-    }
-
-
-
+    return {debtor: dict(creditors) for debtor, creditors in simplified_debt.items()}
