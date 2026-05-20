@@ -11,7 +11,7 @@ class ExpenseRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(
+    async def create_expense(
         self, expense: GroupExpense, splits: list[ExpenseSplit]
     ) -> GroupExpense:
         self.session.add(expense)
@@ -38,7 +38,7 @@ class ExpenseRepository:
 
         return list(groups.scalars().all())
 
-    async def update(self, expense: GroupExpense, data: dict) -> GroupExpense:
+    async def update_expense(self, expense: GroupExpense, data: dict) -> GroupExpense:
         for key, val in data.items():
             setattr(expense, key, val)
 
@@ -47,7 +47,7 @@ class ExpenseRepository:
 
         return expense
 
-    async def delete(self, expense: GroupExpense) -> None:
+    async def delete_expense(self, expense: GroupExpense) -> None:
         await self.session.delete(expense)
         await self.session.commit()
 
@@ -57,3 +57,17 @@ class ExpenseRepository:
         )
 
         return list(result.scalars().all())
+
+    async def has_pending_balance(self, group_id: UUID, user_id: UUID) -> bool:
+
+        result = await self.session.execute(
+            select(ExpenseSplit)
+            .join(GroupExpense, ExpenseSplit.expense_id == GroupExpense.id)
+            .where(
+                GroupExpense.group_id == group_id,
+                ExpenseSplit.user_id == user_id,
+                ExpenseSplit.amount != 0,
+            )
+        )
+
+        return result.scalar_one_or_none() is None
