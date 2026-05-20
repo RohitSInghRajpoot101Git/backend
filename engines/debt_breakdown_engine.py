@@ -65,3 +65,73 @@ def build_debt_breakdown(
                 }
             )
     return {debtor: dict(creditors) for debtor, creditors in breakdown.items()}
+
+
+def aggregate_debt(breakdown: dict) -> dict:
+    """
+    aggregates all expense-level debts into total debt amounts between users.
+    accepts:
+    {
+        "debtor": {
+            "creditor": [
+                {"amount": Decimal("400")},
+                {"amount": Decimal("250")},
+            ]
+        }
+    }
+
+    returns:
+    {
+        "debtor": {
+            "creditor": Decimal("650"),
+        }
+    }
+    """
+
+    aggregated_debt = defaultdict(dict)
+    for debtor, creditors in breakdown.items():
+        for creditor, entries in creditors.items():
+            total_amount = sum(entry["amount"] for entry in entries)
+            aggregated_debt[debtor][creditor] = total_amount
+
+    return {debtor: dict(creditors) for debtor, creditors in aggregated_debt.items()}
+
+
+def simplify_debt(aggregated_debt: dict) -> dict:
+    """
+    simplifies reverse debts between users by keeping only the net debt direction.
+
+    accepts:
+    {
+        "debtor": {
+            "creditor": Decimal("500"),
+        },
+        "creditor": {
+            "debtor": Decimal("200"),
+        }
+    }
+
+    returns:
+    {
+        "debtor": {
+            "creditor": Decimal("300"),
+        }
+    }
+    """
+
+    simplified_debt = defaultdict(dict)
+
+    for debtor, creditors in aggregated_debt.items():
+        for creditor, amount in creditors.items():
+            reverse_amount = aggregated_debt.get(creditor, {}).get(debtor, Decimal(0))
+
+            if amount > reverse_amount:
+                simplified_debt[debtor][creditor] = abs(amount - reverse_amount)
+
+    return {
+        debtor: dict(creditors) 
+        for debtor, creditors in simplified_debt.items()
+    }
+
+
+
