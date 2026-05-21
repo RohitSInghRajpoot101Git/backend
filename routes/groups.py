@@ -18,7 +18,11 @@ from services.group_service import (
 router = APIRouter(prefix="/groups", tags=["Groups"])
 
 
-@router.post("/", response_model=SuccessResponse[GroupResponse], status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/",
+    response_model=SuccessResponse[GroupResponse],
+    status_code=status.HTTP_201_CREATED,
+)
 async def create(
     group_data: GroupCreate,
     db: AsyncSession = Depends(get_db),
@@ -53,7 +57,9 @@ async def update_groups_by_user(
     return await update_group(db, group_id, group_data, user.id)
 
 
-@router.delete("/{group_id}", response_model=SuccessResponse[None], status_code=status.HTTP_200_OK)
+@router.delete(
+    "/{group_id}", response_model=SuccessResponse[None], status_code=status.HTTP_200_OK
+)
 async def delete_groups_by_user(
     group_id: UUID,
     db: AsyncSession = Depends(get_db),
