@@ -130,7 +130,7 @@ def simplify_debt(aggregated_debt: dict) -> dict:
     return {debtor: dict(creditors) for debtor, creditors in simplified_debt.items()}
 
 
-def settle_debt(aggregated_debt: dict) -> dict:
+def settle_debts(aggregated_debt: dict) -> dict:
     net_balance = defaultdict(Decimal)
     for debtor, creditors in aggregated_debt.items():
         for creditor, amount in creditors.items():
