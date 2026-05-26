@@ -11,7 +11,6 @@ class SettlementRepository:
         self.session = session
 
     async def add_settlement(self, settlement: Settlement) -> Settlement:
-
         self.session.add(settlement)
 
         await self.session.commit()
@@ -20,7 +19,6 @@ class SettlementRepository:
         return settlement
 
     async def update_settlement(self, settlement: Settlement) -> Settlement:
-
         # main logic
 
         await self.session.commit()
@@ -29,12 +27,10 @@ class SettlementRepository:
         return settlement
 
     async def delete_settlement(self, settlement: Settlement) -> None:
-
         await self.session.delete(settlement)
         await self.session.commit()
 
     async def get_settlement_by_id(self, settlement_id: UUID) -> Settlement | None:
-
         result = await self.session.execute(
             select(Settlement).where(Settlement.id == settlement_id)
         )
@@ -42,7 +38,6 @@ class SettlementRepository:
         return result.scalar_one_or_none()
 
     async def get_settlements_by_group_id(self, group_id: UUID) -> list[Settlement]:
-
         result = await self.session.execute(
             select(Settlement).where(Settlement.group_id == group_id)
         )

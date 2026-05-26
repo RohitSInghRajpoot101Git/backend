@@ -21,10 +21,10 @@ FAVICON_URL = "/static/EvenUp-white.svg"
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://localhost:3000"],        
+    allow_origins=["https://localhost:3000"],
     allow_credentials=True,
-    allow_methods=["*"],        
-    allow_headers=["*"],        
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
