@@ -23,7 +23,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://localhost:3000",
-        "https://theevenup.vercel.app",
+        "https://useevenup.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
