@@ -2,6 +2,7 @@ import hashlib
 import secrets
 from datetime import datetime, timedelta, timezone
 
+from resend import s
 from fastapi import HTTPException  # type: ignore
 from jose import JWTError, jwt  # type: ignore
 from passlib.context import CryptContext  # type: ignore
@@ -156,7 +157,7 @@ async def request_password_reset(email: str, db: AsyncSession):
 
     raw_token = secrets.token_urlsafe(32)
     token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
-    expire_at = datetime.now(timezone.utc) + timedelta(minutes=15)
+    expire_at = datetime.now(timezone.utc) + timedelta(minutes=10)
 
     await repo_auth.save_reset_token(user.id, token_hash, expire_at)
 
@@ -185,5 +186,7 @@ async def reset_password(token: str, new_password: str, db: AsyncSession):
 
 
 async def send_reset_email(to_email: str, raw_token: str):
-    reset_url = f"https://useevenup.vercel.app/reset-password?token={raw_token}"
+    reset_url = f"https://evenup-backend.onrender.com/reset-password?token={raw_token}"
     print(f"[DEV] Send to {to_email}:{reset_url}")
+
+#Created a delete token Function in user_repo and added a template for reset password in main.py

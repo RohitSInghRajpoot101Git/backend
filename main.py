@@ -68,3 +68,8 @@ def health():
 @app.get("/")
 def home():
     return FileResponse("templates/index.html")
+
+
+@app.get("/reset-password?token={raw_token}")
+def home():
+    return FileResponse("templates/index.html")

@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.deps import get_current_user, get_db
@@ -14,6 +15,8 @@ from services.auth_service import (
     decode_token,
     login_user,
     register_user,
+    request_password_reset,
+    reset_password,
 )
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -77,3 +80,18 @@ async def refresh(
 @router.post("/logout", status_code=status.HTTP_200_OK)
 async def logout(user: User = Depends(get_current_user)):
     return {"message": "Logged out successfully"}
+
+
+@router.get("/forgot-password")
+def forget_password():
+    return FileResponse("templates/forget-password.html")
+
+
+@router.post("/forgot-password")
+async def request_password(email: str, db: AsyncSession = Depends(get_db)):
+    return await request_password_reset(email, db)
+
+
+@router.put("/forgot-password")
+async def update_password(token: str, new_password: str, db: AsyncSession = Depends(get_db)):
+    return await reset_password(token, new_password, db)
