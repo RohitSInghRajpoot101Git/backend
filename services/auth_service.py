@@ -1,3 +1,5 @@
+import hashlib
+import secrets
 from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException  # type: ignore
@@ -12,7 +14,7 @@ from core.config import (
     SECRET_KEY,
 )
 from models.user import AuthProvider, User
-from repository.user_repository import UserRepository
+from repository.user_repository import AuthRepository, UserRepository
 from schemas.auth import LoginResponse, RegisterResponse
 from schemas.user import TokenResponse, UserCreate, UserLogin
 from utils.user_utils import generate_user_code
@@ -142,3 +144,46 @@ async def login_user(login_data: UserLogin, db: AsyncSession) -> LoginResponse:
             token_type="bearer",
         ),
     )
+
+
+async def request_password_reset(email: str, db: AsyncSession):
+    repo = UserRepository(db)
+    repo_auth = AuthRepository(db)
+    user = await repo.get_user_by_email(email)
+
+    if not user or user.auth_provider != AuthProvider.LOCAL:
+        return {"message": "If that email exists, a reset link has been sent"}
+
+    raw_token = secrets.token_urlsafe(32)
+    token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
+    expire_at = datetime.now(timezone.utc) + timedelta(minutes=15)
+
+    await repo_auth.save_reset_token(user.id, token_hash, expire_at)
+
+    await send_reset_email(user.email, raw_token)
+
+    return {"message": "If that email exists, a reset link has been sent"}
+
+
+async def reset_password(token: str, new_password: str, db: AsyncSession):
+    repo_auth = AuthRepository(db)
+    token_hash = hashlib.sha256(token.encode()).hexdigest()
+
+    reset_record = await repo_auth.get_valid_reset_token(token_hash)
+
+    if not reset_record:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+
+    repo = UserRepository(db)
+    user = await repo.get_user_by_id(reset_record.user_id)
+    user.password_hash = hash_password(new_password)
+    await repo.update_user(user)
+
+    await repo_auth.mark_token_as_used(reset_record)
+
+    return {"message": "Password reset successfully"}
+
+
+async def send_reset_email(to_email: str, raw_token: str):
+    reset_url = f"https://useevenup.vercel.app/reset-password?token={raw_token}"
+    print(f"[DEV] Send to {to_email}:{reset_url}")
