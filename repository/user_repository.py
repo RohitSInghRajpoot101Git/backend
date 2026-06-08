@@ -61,7 +61,7 @@ class AuthRepository:
             token_hash=token_hash,
             expires_at=expires_at,
         )
-        await self.session.add(reset_token)
+        self.session.add(reset_token)
         await self.session.commit()
         await self.session.refresh(reset_token)
 
