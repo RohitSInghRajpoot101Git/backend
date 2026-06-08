@@ -1,7 +1,10 @@
 import hashlib
 import secrets
 from datetime import datetime, timedelta, timezone
+from email.message import EmailMessage
+from pathlib import Path
 
+import aiosmtplib
 from fastapi import HTTPException  # type: ignore
 from jose import JWTError, jwt  # type: ignore
 from passlib.context import CryptContext  # type: ignore
@@ -10,8 +13,14 @@ from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 from core.config import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     ALGORITHM,
+    BACKEND_URL,
     REFRESH_TOKEN_EXPIRE_DAYS,
     SECRET_KEY,
+    SMTP_FROM,
+    SMTP_HOST,
+    SMTP_PASSWORD,
+    SMTP_PORT,
+    SMTP_USERNAME,
 )
 from models.user import AuthProvider, User
 from repository.user_repository import AuthRepository, UserRepository
@@ -185,8 +194,54 @@ async def reset_password(token: str, new_password: str, db: AsyncSession):
 
 
 async def send_reset_email(to_email: str, raw_token: str):
-    reset_url = f"https://evenup-backend.onrender.com/reset-password?token={raw_token}"
-    print(f"[DEV] Send to {to_email}:{reset_url}")
+    reset_url = f"{BACKEND_URL}/reset-password?token={raw_token}"
+
+    html_content = Path("templates/email/password-reset-email.html").read_text(
+        encoding="utf-8"
+    )
+
+    html_content = html_content.replace(
+        "__RESET_URL__",
+        reset_url,
+    )
+
+    message = EmailMessage()
+    message["Subject"] = "Reset Your Password"
+    message["From"] = SMTP_FROM
+    message["To"] = to_email
+
+    message.set_content(
+        f"""
+    Password Reset Request
+
+    Reset your password using the link below:
+
+    {reset_url}
+
+    This link expires in 10 minutes.
+
+    If you did not request a password reset, you can ignore this email.
+
+    The EvenUp Team
+    """
+    )
+
+    message.add_alternative(
+        html_content,
+        subtype="html",
+    )
+
+    try:
+        await aiosmtplib.send(
+            message,
+            hostname=SMTP_HOST,
+            port=SMTP_PORT,
+            username=SMTP_USERNAME,
+            password=SMTP_PASSWORD,
+            start_tls=True,
+        )
+    except Exception as e:
+        print(f"Email send failed: {e}")
 
 
 # Created a delete token Function in user_repo and added a template for reset password in main.py

@@ -54,14 +54,14 @@ class AuthRepository:
         self.session = session
 
     async def save_reset_token(
-        self, user_id: UUID, token_hash: str, expires_at: datetime
+        self, user_id: UUID, token_hash: str, expire_at: datetime
     ) -> PasswordResetToken:
         reset_token = PasswordResetToken(
             user_id=user_id,
             token_hash=token_hash,
-            expires_at=expires_at,
+            expire_at=expire_at,
         )
-        await self.session.add(reset_token)
+        self.session.add(reset_token)
         await self.session.commit()
         await self.session.refresh(reset_token)
 
