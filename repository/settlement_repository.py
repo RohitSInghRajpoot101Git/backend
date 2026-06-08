@@ -18,8 +18,9 @@ class SettlementRepository:
 
         return settlement
 
-    async def update_settlement(self, settlement: Settlement) -> Settlement:
-        # main logic
+    async def update_settlement(self, settlement: Settlement, data: dict) -> Settlement:
+        for key, val in data.items():
+            setattr(settlement, key, val)
 
         await self.session.commit()
         await self.session.refresh(settlement)
