@@ -10,6 +10,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALGORITHM: ${{ secrets.ALGORITHM }}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+      REFRESH_TOKEN_EXPIRE_DAYS: ${{ secrets.REFRESH_TOKEN_EXPIRE_DAYS }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEND_FROM: ${{ secrets.RESEND_FROM }}
+      BACKEND_URL: ${{ secrets.BACKEND_URL }}
+
     strategy:
       matrix:
         python-version: ["3.11"]
@@ -41,4 +51,3 @@ jobs:
           pytest tests \
             --ignore=tests/test_full_flow.py \
             -v
-
