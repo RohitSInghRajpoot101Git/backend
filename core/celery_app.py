@@ -16,9 +16,7 @@ celery.conf.update(
     enable_utc=True,
 )
 
-celery.conf.imports = (
-    "tasks.cleanup_task",
-)
+celery.conf.imports = ("tasks.cleanup_task",)
 
 celery.conf.beat_schedule = {
     "cleanup-password-reset-tokens": {

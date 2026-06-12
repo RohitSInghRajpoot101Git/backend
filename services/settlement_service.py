@@ -26,6 +26,3 @@ class SettlementService:
             amount=amount,
         )
         return await self.repo.add_settlement(settlement)
-
-
-        
