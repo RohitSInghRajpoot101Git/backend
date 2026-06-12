@@ -16,6 +16,11 @@ from schemas.expense_split import (
     ExpenseSplitResponse,
     ExpenseUpdate,
 )
+from services.sync_service import (
+    sync_on_expense_created,
+    sync_on_expense_deleted,
+    sync_on_expense_updated,
+)
 
 
 async def create_expenses(
@@ -52,6 +57,15 @@ async def create_expenses(
     )
 
     created_expense = await expense_repo.create_expense(expense, splits_dict)
+
+    await sync_on_expense_created(
+        expense_id=created_expense.id,
+        group_id=group_id,
+        title=expense_data.title,
+        paid_by=paid_by,
+        splits=[{"user_id": uid, "amount": amt} for uid, amt in splits_dict.items()],
+        db=db,
+    )
 
     return SuccessResponse(
         message="Expense created successfully",
@@ -97,8 +111,8 @@ async def get_expense(
     return SuccessResponse(
         message="Expense fetched successfully",
         data={
-            ExpenseResponse.model_validate(expense),
-            [ExpenseSplitResponse.model_validate(s) for s in splits],
+            "expense": ExpenseResponse.model_validate(expense),
+            "splits": [ExpenseSplitResponse.model_validate(s) for s in splits],
         },
     )
 
@@ -134,6 +148,16 @@ async def update_expense_by_id(
         expense, expense_data.model_dump(exclude_unset=True)
     )
 
+    existing_splits = await expense_repo.get_splits(expense_id)
+    await sync_on_expense_updated(
+        expense_id=expense_id,
+        group_id=group_id,
+        title=updated_expense.title,
+        paid_by=updated_expense.paid_by,
+        splits=[{"user_id": s.user_id, "amount": s.amount} for s in existing_splits],
+        db=db,
+    )
+
     return SuccessResponse(
         message="Expense updated successfully",
         data=ExpenseResponse.model_validate(updated_expense),
@@ -163,6 +187,8 @@ async def delete_expense_by_id(
             status_code=403,
             detail="Only payer or group created by can delete the expense",
         )
+
+    await sync_on_expense_deleted(expense_id=expense_id, db=db)
 
     await expense_repo.delete_expense(expense)
 
