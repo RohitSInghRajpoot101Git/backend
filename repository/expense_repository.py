@@ -53,6 +53,25 @@ class ExpenseRepository:
 
         return expense
 
+    async def replace_splits(
+        self, expense_id: UUID, splits_dict: dict[UUID, Decimal]
+    ) -> list[ExpenseSplit]:
+        existing_splits = await self.get_splits(expense_id)
+        for split in existing_splits:
+            await self.session.delete(split)
+
+        new_splits: list[ExpenseSplit] = []
+        for user_id, amount in splits_dict.items():
+            split = ExpenseSplit(expense_id=expense_id, user_id=user_id, amount=amount)
+            self.session.add(split)
+            new_splits.append(split)
+
+        await self.session.commit()
+        for split in new_splits:
+            await self.session.refresh(split)
+
+        return new_splits
+
     async def delete_expense(self, expense: GroupExpense) -> None:
         await self.session.delete(expense)
         await self.session.commit()

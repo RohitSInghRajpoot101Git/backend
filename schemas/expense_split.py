@@ -33,6 +33,19 @@ class ExpenseCreate(BaseModel):
 class ExpenseUpdate(BaseModel):
     title: Optional[str] = None
     amount: Optional[Decimal] = None
+    split_type: Optional[str] = None
+    splits_input: Optional[dict[UUID, Decimal]] = None
+    equal_member_ids: Optional[list[UUID]] = None
+
+    @model_validator(mode="after")
+    def validate_splits(self) -> "ExpenseUpdate":
+        if self.split_type in ("exact", "percentage") and not self.splits_input:
+            raise ValueError(f"splits_input is required for {self.split_type} split")
+
+        if self.split_type and self.split_type not in ("equal", "exact", "percentage"):
+            raise ValueError("split_type must be equal, exact and percentage")
+
+        return self
 
 
 class ExpenseSplitResponse(BaseModel):

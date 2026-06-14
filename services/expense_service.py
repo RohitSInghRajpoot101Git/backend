@@ -144,11 +144,33 @@ async def update_expense_by_id(
             status_code=403, detail="Only person who created the expense can update it"
         )
 
-    updated_expense = await expense_repo.update_expense(
-        expense, expense_data.model_dump(exclude_unset=True)
+    members = await member_repo.list_group_members(group_id)
+    members_ids: list[UUID] = [m.user_id for m in members]
+    update_data = expense_data.model_dump(
+        exclude_unset=True,
+        exclude={"splits_input", "equal_member_ids"},
     )
 
-    existing_splits = await expense_repo.get_splits(expense_id)
+    if expense_data.split_type:
+        update_data["split_type"] = SplitType(expense_data.split_type)
+
+    updated_expense = await expense_repo.update_expense(
+        expense,
+        update_data,
+    )
+
+    if expense_data.amount is not None or expense_data.split_type is not None:
+        splits_dict = calculate_splits(
+            total_amount=Decimal(str(updated_expense.amount)),
+            all_members_id=members_ids,
+            split_type=updated_expense.split_type.value,
+            splits_input=expense_data.splits_input,
+            equal_member_ids=expense_data.equal_member_ids,
+        )
+        existing_splits = await expense_repo.replace_splits(expense_id, splits_dict)
+    else:
+        existing_splits = await expense_repo.get_splits(expense_id)
+
     await sync_on_expense_updated(
         expense_id=expense_id,
         group_id=group_id,
