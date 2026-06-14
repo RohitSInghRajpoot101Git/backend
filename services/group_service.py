@@ -18,6 +18,17 @@ async def _can_access_group(
     return group.created_by == user_id or await member_repo.is_member(user_id, group.id)
 
 
+def _member_response_data(member) -> dict:
+    return {
+        "id": member.id,
+        "name": member.user.name if member.user else str(member.user_id)[:8],
+        "group_id": member.group_id,
+        "user_id": member.user_id,
+        "joined_at": member.joined_at,
+    }
+    #just adding to get the frontend working we can remove it late
+
+
 async def create_group(
     group_data: GroupCreate, db: AsyncSession, user_id: UUID
 ) -> SuccessResponse[GroupResponse]:
@@ -140,7 +151,7 @@ async def add_member(
 
     return SuccessResponse(
         message="Member added successfully",
-        data=GroupMemberResponse.model_validate(member),
+        data=GroupMemberResponse.model_validate(_member_response_data(member)),
     )
 
 
@@ -190,5 +201,8 @@ async def list_members(
 
     return SuccessResponse(
         message="List of members fetched successfully",
-        data=[GroupMemberResponse.model_validate(m) for m in members],
+        data=[
+            GroupMemberResponse.model_validate(_member_response_data(m))
+            for m in members
+        ],
     )
