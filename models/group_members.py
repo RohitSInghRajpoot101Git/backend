@@ -29,3 +29,7 @@ class GroupMember(Base):
     # relationships
     group = relationship("Group", back_populates="members")
     user = relationship("User", back_populates="group_memberships")
+
+    @property
+    def name(self) -> str:
+        return self.user.name if self.user else ""
