@@ -22,7 +22,7 @@ class PersonalExpense(Base):
     title = Column(String, nullable=False)
     amount = Column(Numeric(10, 2), nullable=False)
     category = Column(String, nullable=True)
-    date = Column(DateTime, nullable=True)
+    date = Column(DateTime(timezone=True), nullable=True)
     notes = Column(Text, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
