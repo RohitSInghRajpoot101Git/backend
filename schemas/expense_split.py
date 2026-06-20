@@ -9,7 +9,7 @@ from pydantic import BaseModel, model_validator
 class ExpenseCreate(BaseModel):
     title: str
     amount: Decimal
-    category: str
+    category: str | None = None
     split_type: str
     splits_input: Optional[dict[UUID, Decimal]] = None
     equal_member_ids: Optional[list[UUID]] = None
@@ -55,7 +55,7 @@ class ExpenseSplitResponse(BaseModel):
     expense_id: UUID
     user_id: UUID
     amount: Decimal
-    category: str
+    category: str | None = None
 
     model_config = {"from_attributes": True}
 
@@ -66,7 +66,7 @@ class ExpenseResponse(BaseModel):
     paid_by: UUID
     title: str
     amount: Decimal
-    category: str
+    category: str | None = None
     split_type: str
     created_at: datetime
 
