@@ -54,6 +54,7 @@ async def create_expenses(
         paid_by=paid_by,
         amount=expense_data.amount,
         split_type=SplitType(expense_data.split_type),
+        category=expense_data.category,
     )
 
     created_expense = await expense_repo.create_expense(expense, splits_dict)

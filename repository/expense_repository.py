@@ -1,7 +1,7 @@
 from decimal import Decimal
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import String, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -22,7 +22,7 @@ class ExpenseRepository:
 
         # Create splits with the expense ID
         for user_id, amount in splits_dict.items():
-            split = ExpenseSplit(expense_id=expense.id, user_id=user_id, amount=amount)
+            split = ExpenseSplit(expense_id=expense.id, user_id=user_id, amount=amount, category=expense.category)
             self.session.add(split)
 
         await self.session.commit()
