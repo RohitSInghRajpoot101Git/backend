@@ -1,10 +1,10 @@
 import uuid
 from enum import Enum
 
-from sqlalchemy import TIMESTAMP, Boolean, Column, String  # type: ignore
+from sqlalchemy import TIMESTAMP, Boolean, Column, ForeignKey, String  # type: ignore
 from sqlalchemy import Enum as SQLEnum  # type: ignore
 from sqlalchemy.dialects.postgresql import UUID  # type: ignore
-from sqlalchemy.orm import relationship  # type: ignore
+from sqlalchemy.orm import backref, relationship  # type: ignore
 from sqlalchemy.sql import func  # type: ignore
 
 from core.database import Base
@@ -39,6 +39,20 @@ class User(Base):
         nullable=False,
     )
 
+    # Ghost User Column
+    is_ghost = Column(Boolean, nullable=False, default=False)
+    ghost_owner_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=True,
+        index=True,
+    )
+    shadow_group_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("groups.id"),
+        nullable=True,
+    )
+
     # relationships
 
     personal_expenses = relationship("PersonalExpense", back_populates="user")
@@ -53,4 +67,13 @@ class User(Base):
     )
     payments_received = relationship(
         "Settlement", foreign_keys="Settlement.receiver_id", back_populates="receiver"
+    )
+
+    # relationship b/w Ghost and user
+
+    ghosts = relationship(
+        "User",
+        foreign_keys=[ghost_owner_id],
+        backref=backref("ghost_owner", remote_side=[id]),
+        lazy="selectin",
     )
