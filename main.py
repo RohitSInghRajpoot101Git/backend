@@ -7,14 +7,13 @@ from fastapi.staticfiles import StaticFiles
 from routes.auth import router as auth_router
 from routes.balances import router as balance_router
 from routes.debt_breakdown import router as debt_breakdown_router
+from routes.ghost import router as ghosts_router
 from routes.group_expenses import router as groups_expense_router
 from routes.group_member import router as group_member_router
 from routes.groups import router as groups_router
 from routes.personal_expenses import router as personal_expenses_router
 from routes.settlements import router as settlement_router
 from routes.users import router as users_router
-from routes.ghost import router as ghosts_router
-
 
 app = FastAPI(
     title="Evven API",

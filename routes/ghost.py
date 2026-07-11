@@ -1,14 +1,13 @@
-from uuid import UUID , uuid4
-from fastapi import APIRouter,Depends ,HTTPException, Query, status
 from decimal import Decimal
-from sqlalchemy.ext.asyncio import AsyncSession 
-from core.deps import get_current_user , get_db
-from models.user import User
-from schemas.ghost import  (
-    GhostCreate,
-    GhostResponse,
-    GhostBalanceResponse,
-    GhostDetailResponse,
+from uuid import UUID, uuid4
+
+from fastapi import APIRouter, HTTPException, Query, status
+
+from schemas.ghost import (
+      GhostBalanceResponse,
+      GhostCreate,
+      GhostDetailResponse,
+      GhostResponse,
 )
 
 router = APIRouter(
