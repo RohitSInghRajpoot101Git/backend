@@ -23,3 +23,10 @@ class Group(Base):
 
     personal_expenses = relationship("PersonalExpense", back_populates="group")
     settlements = relationship("Settlement", back_populates="group")
+
+    # shadow_group to group
+    friend = relationship(
+        "Friend",
+        back_populates="shadow_group",
+        uselist=False,
+    )

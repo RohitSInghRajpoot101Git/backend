@@ -4,27 +4,25 @@ from uuid import UUID, uuid4
 from fastapi import APIRouter, HTTPException, Query, status
 
 from schemas.ghost import (
-      GhostBalanceResponse,
-      GhostCreate,
-      GhostDetailResponse,
-      GhostResponse,
+    GhostBalanceResponse,
+    GhostCreate,
+    GhostDetailResponse,
+    GhostResponse,
 )
 
 router = APIRouter(
     prefix="/ghosts",
-    tags=["Ghosts"], 
-    )
+    tags=["Ghosts"],
+)
 
-# TEMPORARY DUMMY DATA 
+# TEMPORARY DUMMY DATA
 
 dummy_ghosts = [
     {
         "id": UUID("11111111-1111-1111-1111-111111111111"),
         "name": "Rahul",
         "user_code": "GHOST-RAHUL01",
-        "shadow_group_id": UUID(
-            "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
-        ),
+        "shadow_group_id": UUID("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
         "net_balance": Decimal("500.00"),
         "status": "owes_you",
         "expenses": [],
@@ -33,9 +31,7 @@ dummy_ghosts = [
         "id": UUID("22222222-2222-2222-2222-222222222222"),
         "name": "Aman",
         "user_code": "GHOST-AMAN001",
-        "shadow_group_id": UUID(
-            "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
-        ),
+        "shadow_group_id": UUID("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
         "net_balance": Decimal("-200.00"),
         "status": "you_owe",
         "expenses": [],
@@ -44,25 +40,27 @@ dummy_ghosts = [
         "id": UUID("33333333-3333-3333-3333-333333333333"),
         "name": "Rohit",
         "user_code": "GHOST-ROHIT01",
-        "shadow_group_id": UUID(
-            "cccccccc-cccc-cccc-cccc-cccccccccccc"
-        ),
+        "shadow_group_id": UUID("cccccccc-cccc-cccc-cccc-cccccccccccc"),
         "net_balance": Decimal("0.00"),
         "status": "settled",
         "expenses": [],
     },
 ]
-# HELPER FUNCTION  
+
+
+# HELPER FUNCTION
 def find_ghost(ghost_id: UUID):
-      for ghost in dummy_ghosts:
+    for ghost in dummy_ghosts:
         if ghost["id"] == ghost_id:
             return ghost
 
-      return None
+    return None
 
-# routes 
+
+# routes
 
 #  CREATE GHOST
+
 
 @router.post(
     "/",
@@ -95,7 +93,6 @@ async def create_ghost(payload: GhostCreate):
         "name": name,
         "user_code": f"GHOST-{str(ghost_id)[:8].upper()}",
         "shadow_group_id": shadow_group_id,
-
         # Additional internal dummy fields
         "net_balance": Decimal("0.00"),
         "status": "settled",
@@ -106,7 +103,9 @@ async def create_ghost(payload: GhostCreate):
 
     return new_ghost
 
-  # LIST ALL GHOSTS / SEARCH GHOSTS 
+
+# LIST ALL GHOSTS / SEARCH GHOSTS
+
 
 @router.get(
     "/",
@@ -123,9 +122,7 @@ async def list_ghosts(
         search_text = search.strip().lower()
 
         ghosts = [
-            ghost
-            for ghost in dummy_ghosts
-            if search_text in ghost["name"].lower()
+            ghost for ghost in dummy_ghosts if search_text in ghost["name"].lower()
         ]
 
     # Sort alphabetically
@@ -147,7 +144,9 @@ async def list_ghosts(
         for ghost in ghosts
     ]
 
+
 #  GET GHOST BALANCE
+
 
 @router.get(
     "/{ghost_id}/balance",
@@ -169,10 +168,12 @@ async def get_ghost_balance(ghost_id: UUID):
         "group_id": ghost["shadow_group_id"],
         "net_balance": ghost["net_balance"],
         "status": ghost["status"],
-    } 
+    }
+
 
 # 4. GET COMPLETE GHOST DETAILS
- 
+
+
 @router.get(
     "/{ghost_id}",
     response_model=GhostDetailResponse,
@@ -193,7 +194,6 @@ async def get_ghost_detail(ghost_id: UUID):
         "group_id": ghost["shadow_group_id"],
         "net_balance": ghost["net_balance"],
         "status": ghost["status"],
-
         # Empty for now because PersonalExpense repository/service
         # is not being used in this temporary route.
         "expenses": ghost["expenses"],
@@ -201,6 +201,7 @@ async def get_ghost_detail(ghost_id: UUID):
 
 
 #  DELETE GHOST
+
 
 @router.delete(
     "/{ghost_id}",
@@ -219,10 +220,7 @@ async def delete_ghost(ghost_id: UUID):
     if ghost["net_balance"] != Decimal("0.00"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=(
-                "Ghost has a pending balance "
-                "and cannot be deleted"
-            ),
+            detail=("Ghost has a pending balance and cannot be deleted"),
         )
 
     dummy_ghosts.remove(ghost)
@@ -230,4 +228,4 @@ async def delete_ghost(ghost_id: UUID):
     return {
         "message": "Ghost deleted successfully",
         "data": None,
-    } 
+    }
