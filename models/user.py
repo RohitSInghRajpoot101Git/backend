@@ -1,10 +1,10 @@
 import uuid
 from enum import Enum
 
-from sqlalchemy import TIMESTAMP, Boolean, Column, ForeignKey, String  # type: ignore
+from sqlalchemy import TIMESTAMP, Boolean, Column, String  # type: ignore
 from sqlalchemy import Enum as SQLEnum  # type: ignore
 from sqlalchemy.dialects.postgresql import UUID  # type: ignore
-from sqlalchemy.orm import backref, relationship  # type: ignore
+from sqlalchemy.orm import relationship  # type: ignore
 from sqlalchemy.sql import func  # type: ignore
 
 from core.database import Base
@@ -40,22 +40,22 @@ class User(Base):
     )
 
     # Ghost User Column
-    is_ghost = Column(Boolean, nullable=False, default=False)
-    ghost_owner_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey("users.id"),
-        nullable=True,
-        index=True,
-    )
-    shadow_group_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey(
-            "groups.id",
-            use_alter=True,
-            name="fk_users_shadow_group_id_groups",
-        ),
-        nullable=True,
-    )
+    # is_ghost = Column(Boolean, nullable=False, default=False)
+    # ghost_owner_id = Column(
+    #     UUID(as_uuid=True),
+    #     ForeignKey("users.id"),
+    #     nullable=True,
+    #     index=True,
+    # )
+    # shadow_group_id = Column(
+    #     UUID(as_uuid=True),
+    #     ForeignKey(
+    #         "groups.id",
+    #         use_alter=True,
+    #         name="fk_users_shadow_group_id_groups",
+    #     ),
+    #     nullable=True,
+    # )
 
     # relationships
 
@@ -75,12 +75,12 @@ class User(Base):
         "Settlement", foreign_keys="Settlement.receiver_id", back_populates="receiver"
     )
 
-    # relationship b/w Ghost and user
+    # # relationship b/w Ghost and user
 
-    ghosts = relationship(
-        "User",
-        foreign_keys=[ghost_owner_id],
-        backref=backref("ghost_owner", remote_side=[id]),
-        lazy="selectin",
-    )
-    shadow_group = relationship("Group", foreign_keys=[shadow_group_id])
+    # ghosts = relationship(
+    #     "User",
+    #     foreign_keys=[ghost_owner_id],
+    #     backref=backref("ghost_owner", remote_side=[id]),
+    #     lazy="selectin",
+    # )
+    # shadow_group = relationship("Group", foreign_keys=[shadow_group_id])
