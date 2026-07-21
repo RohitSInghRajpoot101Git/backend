@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from engines.split_engine import calculate_splits
-from models.group_expenses import GroupExpense, SplitType
+from models.group_expenses import GroupExpense, PaymentMethod, SplitType
 from repository.expense_repository import ExpenseRepository
 from repository.group_member_repository import GroupMemberRepository
 from repository.group_repository import GroupRepository
@@ -55,6 +55,9 @@ async def create_expenses(
         amount=expense_data.amount,
         split_type=SplitType(expense_data.split_type),
         category=expense_data.category,
+        payment_method=PaymentMethod(expense_data.payment_method)
+        if expense_data.payment_method
+        else None,
     )
 
     created_expense = await expense_repo.create_expense(expense, splits_dict)
@@ -154,6 +157,9 @@ async def update_expense_by_id(
 
     if expense_data.split_type:
         update_data["split_type"] = SplitType(expense_data.split_type)
+
+    if expense_data.payment_method:
+        update_data["payment_method"] = PaymentMethod(expense_data.payment_method)
 
     updated_expense = await expense_repo.update_expense(
         expense,
