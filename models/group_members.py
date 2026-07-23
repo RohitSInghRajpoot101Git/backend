@@ -1,7 +1,7 @@
 import uuid
 from enum import Enum
 
-from sqlalchemy import Column, DateTime, ForeignKey, CheckConstraint
+from sqlalchemy import CheckConstraint, Column, DateTime, ForeignKey
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -20,14 +20,12 @@ class GroupMember(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     group_id = Column(UUID(as_uuid=True), ForeignKey("groups.id"), nullable=False)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True) # made nullable for friend
+    user_id = Column(
+        UUID(as_uuid=True), ForeignKey("users.id"), nullable=True
+    )  # made nullable for friend
     # friend
-    friend_id = Column(
-        UUID(as_uuid=True), 
-        ForeignKey("friends.id"), 
-        nullable=True
-    )
-    
+    friend_id = Column(UUID(as_uuid=True), ForeignKey("friends.id"), nullable=True)
+
     role = Column(
         SQLEnum(Role), nullable=False, default=Role.MEMBER
     )  # "admin" or "member"
@@ -40,7 +38,7 @@ class GroupMember(Base):
             name="ck_group_members_user_xor_friend",
         ),
     )
-    
+
     # relationships
     group = relationship("Group", back_populates="members")
     # user = relationship("User", back_populates="group_memberships")
@@ -54,7 +52,6 @@ class GroupMember(Base):
         "Friend",
         back_populates="group_memberships",
     )
-
 
     @property
     def name(self) -> str:

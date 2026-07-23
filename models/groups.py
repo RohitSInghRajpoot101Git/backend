@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, ForeignKey, String, Boolean, text
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -26,7 +26,7 @@ class Group(Base):
 
     # shadow check
     is_shadow = Column(Boolean, nullable=False, server_default=text("false"))
-    
+
     # shadow_group to group
     friend = relationship(
         "Friend",
