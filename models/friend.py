@@ -108,3 +108,8 @@ class Friend(Base):
         "User",
         foreign_keys=[claimed_by_user_id],
     )
+
+    invites = relationship(
+        "FriendInvite",
+        back_populates="friend",
+    )
