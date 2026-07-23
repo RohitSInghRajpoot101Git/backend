@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import HTTPException
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.expense_splits import ExpenseSplit
@@ -12,7 +13,6 @@ from repository.group_member_repository import GroupMemberRepository
 from repository.group_repository import GroupRepository
 from schemas.common import SuccessResponse
 from schemas.friend import FriendResponse
-from sqlalchemy import select
 
 
 async def create_friend(

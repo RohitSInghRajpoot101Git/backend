@@ -3,16 +3,17 @@ from uuid import UUID
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.friend import Friend
-from models.groups import Group
-from models.group_members import GroupMember
 from models.expense_splits import ExpenseSplit
+from models.friend import Friend
+from models.group_members import GroupMember
+from models.groups import Group
 from models.settlements import Settlement
+
 
 class FriendRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
-        
+
     async def create_friend(self, friend: Friend) -> Friend:
         """
         Persist a new Friend
@@ -23,7 +24,7 @@ class FriendRepository:
         await self.session.commit()
         await self.session.refresh(friend)
         return friend
-    
+
     async def get_by_id(self, friend_id: UUID) -> Friend | None:
         """
         Fetch a friend by its ID.
@@ -32,7 +33,7 @@ class FriendRepository:
             select(Friend).where(Friend.id == friend_id)
         )
         return result.scalar_one_or_none()
-    
+
     async def get_shadow_group(self, friend_id: UUID) -> Group | None:
         """
         Return the friend's shadow group.
@@ -43,14 +44,14 @@ class FriendRepository:
             .where(Friend.id == friend_id)
         )
         return result.scalar_one_or_none()
-    
+
     async def mark_claimed(
         self,
         friend: Friend,
         claimed_by_user_id: UUID,
     ) -> Friend:
         """
-         Mark a friend as claimed by a real user.
+        Mark a friend as claimed by a real user.
         """
         friend.claimed_by_user_id = claimed_by_user_id
 
@@ -58,14 +59,14 @@ class FriendRepository:
         await self.session.refresh(friend)
 
         return friend
-    
+
     async def delete_friend(self, friend: Friend) -> None:
         """
         Delete a friend.
         """
         await self.session.delete(friend)
         await self.session.commit()
-        
+
     # Claiming  Process
     async def rewrite_group_members(
         self,
@@ -83,8 +84,7 @@ class FriendRepository:
                 friend_id=None,
             )
         )
-        
-        
+
     async def rewrite_expense_splits(
         self,
         friend_id: UUID,
@@ -101,8 +101,7 @@ class FriendRepository:
                 friend_id=None,
             )
         )
-        
-        
+
     async def rewrite_settlements(
         self,
         friend_id: UUID,
@@ -130,7 +129,7 @@ class FriendRepository:
                 receiver_friend_id=None,
             )
         )
-        
+
     async def has_nonzero_splits(self, friend_id: UUID) -> bool:
         result = await self.session.execute(
             select(ExpenseSplit).where(
@@ -138,7 +137,7 @@ class FriendRepository:
             )
         )
         return result.scalar_one_or_none() is not None
-    
+
     # async def is_claimed(self, friend_id: UUID) -> bool:
     #     """
     #     Return True if the friend has already been claimed.

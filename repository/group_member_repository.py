@@ -14,6 +14,7 @@ class GroupMemberRepository:
         create_group_member is not looking for friend i have created a temprory but future resolve need to be resolved
         same for get_group_member
         """
+
     async def create_group_member(
         self,
         group_id: UUID,
