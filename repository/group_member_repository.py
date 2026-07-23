@@ -10,9 +10,25 @@ from models.group_members import GroupMember
 class GroupMemberRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
-
-    async def add_group_member(self, user_id: UUID, group_id: UUID) -> GroupMember:
-        member = GroupMember(group_id=group_id, user_id=user_id)
+        """
+        create_group_member is not looking for friend i have created a temprory but future resolve need to be resolved
+        same for get_group_member
+        """
+    async def create_group_member(
+        self,
+        group_id: UUID,
+        *,
+        user_id: UUID | None = None,
+        friend_id: UUID | None = None,
+    ) -> GroupMember:
+        """
+        The DB's CHECK constraint will catch (user_id is None and friend_id is None) or (both set) — but only at flush/commit time, as a raw IntegrityError with a Postgres constraint-name message, not a clean application error. Given ParticipantRef (from Task 2) already exists specifically to prevent this earlier and produce a clear ValueError, this is a good spot to use it:
+        """
+        member = GroupMember(
+            group_id=group_id,
+            user_id=user_id,
+            friend_id=friend_id,
+        )
 
         self.session.add(member)
         await self.session.commit()

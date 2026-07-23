@@ -38,7 +38,10 @@ async def create_group(
     member_repo = GroupMemberRepository(db)
     group = Group(name=group_data.name, created_by=user_id)
     created_group = await repo.create(group)
-    await member_repo.add_group_member(user_id, created_group.id)
+    await member_repo.create_group_member(
+        group_id=created_group.id,
+        user_id=user_id,
+    )
     return SuccessResponse(
         message="Group created successfully",
         data=GroupResponse.model_validate(created_group),
@@ -146,7 +149,10 @@ async def add_member(
             status_code=400, detail="User is already existing in the group"
         )
 
-    await member_repo.add_group_member(user_id, group_id)
+    await member_repo.create_group_member(
+        group_id=group_id,
+        user_id=user_id,
+    )
     member = await member_repo.get_group_member(user_id, group_id)
     if not member:
         raise HTTPException(status_code=500, detail="Member could not be loaded")
