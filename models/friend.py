@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import TIMESTAMP, Column, ForeignKey, String
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, String, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -39,7 +39,13 @@ class Friend(Base):
         unique=True,
         nullable=True,
     )
-
+    
+    claimed_by_user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=True,
+    )
+    
     # timestamps
 
     created_at = Column(
@@ -54,6 +60,11 @@ class Friend(Base):
         onupdate=func.now(),
         nullable=False,
     )
+    
+    claimed_at = Column(
+        DateTime(timezone = True),
+        nullable=True,
+    )
 
     # relationShips
 
@@ -67,4 +78,33 @@ class Friend(Base):
         "Group",
         foreign_keys=[shadow_group_id],
         back_populates="friend",
+    )
+    
+    group_memberships = relationship(
+        "GroupMember",
+        back_populates="friend",
+    )
+    
+    expense_splits = relationship(
+        "ExpenseSplit",
+        back_populates="friend",
+    )
+    
+    # friend
+    
+    payments_made = relationship(
+        "Settlement",
+        foreign_keys="Settlement.payer_friend_id",
+        back_populates="payer_friend",
+    )
+
+    payments_received = relationship(
+        "Settlement",
+        foreign_keys="Settlement.receiver_friend_id",
+        back_populates="receiver_friend",
+    )
+    
+    claimed_by = relationship(
+        "User",
+        foreign_keys=[claimed_by_user_id],
     )
